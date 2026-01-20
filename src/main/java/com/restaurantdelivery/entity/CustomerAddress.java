@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class CustomerAddress {
@@ -38,10 +40,20 @@ public class CustomerAddress {
 	
 	private String pincode;
 	
-	private boolean isDefault;
+	private Boolean defaultAdd;
 	
 	private LocalDateTime createdAt;	
 	private LocalDateTime updatedAt;
+	
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 
 	public Long getId() {
 		return id;
@@ -107,12 +119,12 @@ public class CustomerAddress {
 		this.pincode = pincode;
 	}
 
-	public boolean isDefault() {
-		return isDefault;
+	public Boolean getDefaultAdd() {
+		return defaultAdd;
 	}
 
-	public void setDefault(boolean isDefault) {
-		this.isDefault = isDefault;
+	public void setDefaultAdd(Boolean defaultAdd) {
+		this.defaultAdd = defaultAdd;
 	}
 
 	public LocalDateTime getCreatedAt() {

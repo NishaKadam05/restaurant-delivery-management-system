@@ -2,6 +2,7 @@ package com.restaurantdelivery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,7 +19,7 @@ import com.restaurantdelivery.security.JwtAuthenticationEntryPoint;
 import com.restaurantdelivery.security.JwtFilter;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
 	private final JwtFilter jwtFilter;
@@ -64,11 +65,15 @@ public class SecurityConfig {
 			.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-					.requestMatchers("/auth/**", "/menu/**", "/categories/**", "/restaurant/**","/offers/active","/reviews/**").permitAll()
-					.requestMatchers("/customers/**","/orders/**","/payments/**").hasRole("CUSTOMER")
-					.requestMatchers("/staff/**").hasRole("RESTAURANT_STAFF")
-					.requestMatchers("/delivery/**").hasRole("DELIVERY_PARTNER")
-					.requestMatchers("/admin/**").hasRole("ADMIN")
+					.requestMatchers(
+							"/api/auth/**",
+							"/api/reviews/all",
+							"/api/reviews/type/**").permitAll()
+					.requestMatchers(HttpMethod.GET,
+							"/api/categories/**",
+							"/api/menu-items/**",
+							"/api/offers/**",
+							"/api/restaurant/**").permitAll()
 					.anyRequest()
 					.authenticated()
 			)

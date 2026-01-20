@@ -7,11 +7,13 @@ import com.restaurantdelivery.enums.DeliveryStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class DeliveryAssignment {
@@ -20,26 +22,22 @@ public class DeliveryAssignment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name = "order_id")
+	@OneToOne
+	@JoinColumn(name = "order_id", unique = true)
 	private Order order;
 	
 	@ManyToOne
 	@JoinColumn(name = "delivery_partner_id")
 	private User deliveryPartner;
 	
+	@ManyToOne
+	@JoinColumn(name = "customer_id")
+	private User customer;
+	
 	private LocalDateTime assignedAt;
-	private LocalDateTime acceptedAt;
-	private LocalDateTime pickedUpAt;
-	private LocalDateTime deliveredAt;
 	
 	@Enumerated(EnumType.STRING)
 	private DeliveryStatus status;
-	
-	private String rejectionReason;
-	
-	private LocalDateTime createdAt;	
-	private LocalDateTime updatedAt;
 	
 	
 	public Long getId() {
@@ -66,47 +64,17 @@ public class DeliveryAssignment {
 	public void setAssignedAt(LocalDateTime assignedAt) {
 		this.assignedAt = assignedAt;
 	}
-	public LocalDateTime getAcceptedAt() {
-		return acceptedAt;
-	}
-	public void setAcceptedAt(LocalDateTime acceptedAt) {
-		this.acceptedAt = acceptedAt;
-	}
-	public LocalDateTime getPickedUpAt() {
-		return pickedUpAt;
-	}
-	public void setPickedUpAt(LocalDateTime pickedUpAt) {
-		this.pickedUpAt = pickedUpAt;
-	}
-	public LocalDateTime getDeliveredAt() {
-		return deliveredAt;
-	}
-	public void setDeliveredAt(LocalDateTime deliveredAt) {
-		this.deliveredAt = deliveredAt;
-	}
 	public DeliveryStatus getStatus() {
 		return status;
 	}
 	public void setStatus(DeliveryStatus status) {
 		this.status = status;
 	}
-	public String getRejectionReason() {
-		return rejectionReason;
+	public User getCustomer() {
+		return customer;
 	}
-	public void setRejectionReason(String rejectionReason) {
-		this.rejectionReason = rejectionReason;
-	}
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
-	public void setUpdatedAt(LocalDateTime updatedAt) {
-		this.updatedAt = updatedAt;
+	public void setCustomer(User customer) {
+		this.customer = customer;
 	}
 	
 	

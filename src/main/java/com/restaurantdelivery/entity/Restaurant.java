@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class Restaurant {
@@ -27,14 +29,24 @@ public class Restaurant {
 	private LocalTime openingTime;
 	private LocalTime closingTime;
 	
-	private boolean isOpen;
+	private Boolean open;
 	
-	private double averageRating;
-	private int totalReviews;
+	private double averageRating = 0.0;
+	private int totalReviews = 0;
 	
 	private LocalDateTime createdAt;	
 	private LocalDateTime updatedAt;
 	
+	
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 	
 	public Long getId() {
 		return id;
@@ -102,11 +114,11 @@ public class Restaurant {
 	public void setClosingTime(LocalTime closingTime) {
 		this.closingTime = closingTime;
 	}
-	public boolean isOpen() {
-		return isOpen;
+	public Boolean getOpen() {
+		return open;
 	}
-	public void setOpen(boolean isOpen) {
-		this.isOpen = isOpen;
+	public void setOpen(Boolean open) {
+		this.open = open;
 	}
 	public double getAverageRating() {
 		return averageRating;

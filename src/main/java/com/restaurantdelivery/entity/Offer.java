@@ -1,9 +1,12 @@
 package com.restaurantdelivery.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.restaurantdelivery.enums.DiscountType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +14,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class Offer {
@@ -27,16 +33,28 @@ public class Offer {
 	@Enumerated(EnumType.STRING)
 	private DiscountType discountType;
 	
-	private double discountValue;
-	private double minOrderAmount;
+	private Double discountValue;
+	private Double minOrderAmount;
 	
 	private LocalDateTime validFrom;
 	private LocalDateTime validUntil;
 	
-	private int usageLimit;
-	private int usedCount;
-	private boolean isActive;
+	private Boolean active;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 	
+    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
+	
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 	
 	public Long getId() {
 		return id;
@@ -62,16 +80,16 @@ public class Offer {
 	public void setDiscountType(DiscountType discountType) {
 		this.discountType = discountType;
 	}
-	public double getDiscountValue() {
+	public Double getDiscountValue() {
 		return discountValue;
 	}
-	public void setDiscountValue(double discountValue) {
+	public void setDiscountValue(Double discountValue) {
 		this.discountValue = discountValue;
 	}
-	public double getMinOrderAmount() {
+	public Double getMinOrderAmount() {
 		return minOrderAmount;
 	}
-	public void setMinOrderAmount(double minOrderAmount) {
+	public void setMinOrderAmount(Double minOrderAmount) {
 		this.minOrderAmount = minOrderAmount;
 	}
 	public LocalDateTime getValidFrom() {
@@ -86,23 +104,35 @@ public class Offer {
 	public void setValidUntil(LocalDateTime validUntil) {
 		this.validUntil = validUntil;
 	}
-	public int getUsageLimit() {
-		return usageLimit;
+	public Boolean getActive() {
+		return active;
 	}
-	public void setUsageLimit(int usageLimit) {
-		this.usageLimit = usageLimit;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
-	public int getUsedCount() {
-		return usedCount;
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
-	public void setUsedCount(int usedCount) {
-		this.usedCount = usedCount;
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
-	public boolean isActive() {
-		return isActive;
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
 	}
 	
 	

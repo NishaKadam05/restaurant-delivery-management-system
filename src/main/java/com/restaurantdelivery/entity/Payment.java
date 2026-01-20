@@ -9,10 +9,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class Payment {
@@ -21,7 +25,8 @@ public class Payment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", unique = true)
 	private Order order;
 	
 	@Enumerated(EnumType.STRING)
@@ -30,14 +35,21 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	private PaymentStatus paymentStatus;
 	
-	@Column(unique = true)
-	private String transactionId;
-	
 	private double amount;
 	private LocalDateTime paymentDate;
 	
 	private LocalDateTime createdAt;	
 	private LocalDateTime updatedAt;
+	
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 
 	
 	public Long getId() {
@@ -63,12 +75,6 @@ public class Payment {
 	}
 	public void setPaymentStatus(PaymentStatus paymentStatus) {
 		this.paymentStatus = paymentStatus;
-	}
-	public String getTransactionId() {
-		return transactionId;
-	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
 	}
 	public double getAmount() {
 		return amount;

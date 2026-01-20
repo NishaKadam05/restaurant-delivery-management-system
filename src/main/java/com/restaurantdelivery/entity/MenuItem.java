@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class MenuItem {
@@ -23,15 +25,24 @@ public class MenuItem {
 	
 	private String name;
 	private String description;
-	private double basePrice;
-	private boolean isAvailable;
-	private boolean isVeg;
-	private int preparationTime;
-	private double averageRating;
-	private int totalReviews;
+	private Double basePrice;
+	private Boolean available;
+	private Boolean veg;
+	private Integer preparationTime;
+	private Double averageRating = 0.0;
+	private Integer totalReviews = 0;
 	private LocalDateTime createdAt;	
 	private LocalDateTime updatedAt;
 	
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 	
 	public Long getId() {
 		return id;
@@ -57,40 +68,40 @@ public class MenuItem {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public double getBasePrice() {
+	public Double getBasePrice() {
 		return basePrice;
 	}
-	public void setBasePrice(double basePrice) {
+	public void setBasePrice(Double basePrice) {
 		this.basePrice = basePrice;
 	}
-	public boolean isAvailable() {
-		return isAvailable;
+	public Boolean getAvailable() {
+		return available;
 	}
-	public void setAvailable(boolean isAvailable) {
-		this.isAvailable = isAvailable;
+	public void setAvailable(Boolean available) {
+		this.available = available;
 	}
-	public boolean isVeg() {
-		return isVeg;
+	public Boolean getVeg() {
+		return veg;
 	}
-	public void setVeg(boolean isVeg) {
-		this.isVeg = isVeg;
+	public void setVeg(Boolean veg) {
+		this.veg = veg;
 	}
-	public int getPreparationTime() {
+	public Integer getPreparationTime() {
 		return preparationTime;
 	}
-	public void setPreparationTime(int preparationTime) {
+	public void setPreparationTime(Integer preparationTime) {
 		this.preparationTime = preparationTime;
 	}
-	public double getAverageRating() {
+	public Double getAverageRating() {
 		return averageRating;
 	}
-	public void setAverageRating(double averageRating) {
+	public void setAverageRating(Double averageRating) {
 		this.averageRating = averageRating;
 	}
-	public int getTotalReviews() {
+	public Integer getTotalReviews() {
 		return totalReviews;
 	}
-	public void setTotalReviews(int totalReviews) {
+	public void setTotalReviews(Integer totalReviews) {
 		this.totalReviews = totalReviews;
 	}
 	public LocalDateTime getCreatedAt() {

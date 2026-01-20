@@ -1,11 +1,16 @@
 package com.restaurantdelivery.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.restaurantdelivery.dto.response.AddressResponse;
 import com.restaurantdelivery.enums.OrderStatus;
 import com.restaurantdelivery.enums.OrderType;
+import com.restaurantdelivery.enums.PaymentMethod;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -13,19 +18,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "orders")
 public class Order {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(unique=true)
-	private String orderNumber;
-	
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
 	private User customer;
+	
+	@Enumerated(EnumType.STRING)
+	private OrderType orderType;
 	
 	@ManyToOne
 	@JoinColumn(name = "delivery_address_id")
@@ -36,27 +48,50 @@ public class Order {
 	private User deliveryPartner;
 	
 	@Enumerated(EnumType.STRING)
-	private OrderType orderType;
-	
-	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 	
-	private double subtotal;
-	private double deliveryFee;
-	private double taxAmount;
-	private double discountAmount;
-	private double totalAmount;
+	private Double subtotal;
+	private Double deliveryFee;
+	private Double discountAmount;
+	private Double totalAmount;
 	
 	@ManyToOne
 	@JoinColumn(name = "offer_id")
 	private Offer offer;
 	
 	private String specialInstructions;
-	private int estimatedPreparationTime;
-	private LocalDateTime estimatedDeliveryTime;
+	
+	@Enumerated(EnumType.STRING)
+	private PaymentMethod paymentMethod;
+	
+	private String cancelReason;
+	private LocalDateTime cancelledAt;
 	
 	private LocalDateTime createdAt;	
 	private LocalDateTime updatedAt;
+	
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+    
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Payment payment;
+    
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name= "delivery_assignment_id")
+    private DeliveryAssignment deliveryAssignment;
+    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
+    
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 	
 	
 	public Long getId() {
@@ -64,12 +99,6 @@ public class Order {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getOrderNumber() {
-		return orderNumber;
-	}
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
 	}
 	public User getCustomer() {
 		return customer;
@@ -101,34 +130,28 @@ public class Order {
 	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-	public double getSubtotal() {
+	public Double getSubtotal() {
 		return subtotal;
 	}
-	public void setSubtotal(double subtotal) {
+	public void setSubtotal(Double subtotal) {
 		this.subtotal = subtotal;
 	}
-	public double getDeliveryFee() {
+	public Double getDeliveryFee() {
 		return deliveryFee;
 	}
-	public void setDeliveryFee(double deliveryFee) {
+	public void setDeliveryFee(Double deliveryFee) {
 		this.deliveryFee = deliveryFee;
 	}
-	public double getTaxAmount() {
-		return taxAmount;
-	}
-	public void setTaxAmount(double taxAmount) {
-		this.taxAmount = taxAmount;
-	}
-	public double getDiscountAmount() {
+	public Double getDiscountAmount() {
 		return discountAmount;
 	}
-	public void setDiscountAmount(double discountAmount) {
+	public void setDiscountAmount(Double discountAmount) {
 		this.discountAmount = discountAmount;
 	}
-	public double getTotalAmount() {
+	public Double getTotalAmount() {
 		return totalAmount;
 	}
-	public void setTotalAmount(double totalAmount) {
+	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 	public Offer getOffer() {
@@ -143,18 +166,6 @@ public class Order {
 	public void setSpecialInstructions(String specialInstructions) {
 		this.specialInstructions = specialInstructions;
 	}
-	public int getEstimatedPreparationTime() {
-		return estimatedPreparationTime;
-	}
-	public void setEstimatedPreparationTime(int estimatedPreparationTime) {
-		this.estimatedPreparationTime = estimatedPreparationTime;
-	}
-	public LocalDateTime getEstimatedDeliveryTime() {
-		return estimatedDeliveryTime;
-	}
-	public void setEstimatedDeliveryTime(LocalDateTime estimatedDeliveryTime) {
-		this.estimatedDeliveryTime = estimatedDeliveryTime;
-	}
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
@@ -166,6 +177,67 @@ public class Order {
 	}
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public PaymentMethod getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(PaymentMethod paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+
+	public List<OrderItem> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<OrderItem> orderItems) {
+		this.orderItems = orderItems;
+	}
+
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+
+	public DeliveryAssignment getDeliveryAssignment() {
+		return deliveryAssignment;
+	}
+
+	public void setDeliveryAssignment(DeliveryAssignment deliveryAssignment) {
+		this.deliveryAssignment = deliveryAssignment;
+	}
+
+	public List<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(List<Review> reviews) {
+		this.reviews = reviews;
+	}
+
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	public void setCancelReason(String cancelReason) {
+		this.cancelReason = cancelReason;
+	}
+
+	public LocalDateTime getCancelledAt() {
+		return cancelledAt;
+	}
+
+	public void setCancelledAt(LocalDateTime cancelledAt) {
+		this.cancelledAt = cancelledAt;
+	}
+	
+	public void addOrderItem(OrderItem item) {
+		this.orderItems.add(item);
+		item.setOrder(this);
 	}
 	
 	

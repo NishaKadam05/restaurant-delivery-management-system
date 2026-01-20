@@ -2,11 +2,11 @@ package com.restaurantdelivery.enums;
 
 public enum OrderStatus {
 
-	CONFIRMED, 
+	PLACED, 
 	PREPARING, 
 	READY, 
 	OUT_FOR_DELIVERY, 
 	DELIVERED, 
-	COMPLETED, 
+	PICKED_UP, 
 	CANCELLED
 }
